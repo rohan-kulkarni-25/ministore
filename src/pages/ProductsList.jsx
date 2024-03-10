@@ -1,29 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import data from "../data/Products.json";
-import Cart from "./Cart";
+
+import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const ProductsList = () => {
+  const user = useSelector((state) => state.user);
   const productData = data.products;
+  const navigate = useNavigate();
 
   // let cart = [];
   const [cart, setCart] = useState([]);
 
   const updateCart = (data) => {
-    // get the old state
     let oldState = [...cart];
 
-    // push the new data to old
     oldState.push(data);
-    // cart = oldState;
-    // console.log(cart);
-    // update state
     setCart(oldState);
   };
 
+  const checkLogin = () => {
+    if (user.username == undefined) {
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
   return (
-    <div className="flex flex-row gap-4 m-24 flex-wrap">
-      <div className="w-1/2 flex flex-row flex-wrap gap-4">
+    <div className="flex flex-col gap-12">
+      <nav className="bg-yellow-500 w-full h-12 flex flex-row items-center justify-between px-12">
+        <p className="text-2xl">{user.username}</p>
+        <NavLink className="text-3xl font-bold" to={"/cart"}>
+          CART
+        </NavLink>
+      </nav>
+      <div className="flex flex-row flex-wrap gap-4 mx-24">
         {productData.map((product) => {
           return (
             <ProductCard
@@ -34,8 +49,6 @@ const ProductsList = () => {
           );
         })}
       </div>
-
-      <Cart cart={cart} />
     </div>
   );
 };
